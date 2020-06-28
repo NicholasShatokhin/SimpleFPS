@@ -16,7 +16,7 @@ var reloading = false
 func _ready():
 	current_ammo = clip_size
 
-func _process(delta):
+func _process(_delta):
 	if reloading:
 		ammo_label.set_text("Reloading...")
 	else:
