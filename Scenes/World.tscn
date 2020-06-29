@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Interactable/InteractableLightSwitch.gd" type="Script" id=2]
 [ext_resource path="res://default_env.tres" type="Environment" id=3]
+[ext_resource path="res://Enemy/Enemy.tscn" type="PackedScene" id=4]
 
 [sub_resource type="CubeMesh" id=1]
 
@@ -19,9 +20,10 @@ albedo_color = Color( 0.92549, 0.12549, 0.12549, 1 )
 [node name="World" type="Spatial"]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.83748, 0, 5.80626 )
 
 [node name="Ground" type="MeshInstance" parent="."]
-transform = Transform( 9.8647, 0, 0, 0, 1, 0, 0, 0, 7.19094, 0, -2.27478, 0 )
+transform = Transform( 9.8647, 0, 0, 0, 1, 0, 0, 0, 13.342, 0, -2.27478, 0 )
 mesh = SubResource( 1 )
 material/0 = null
 
@@ -38,6 +40,16 @@ material/0 = null
 [node name="StaticBody" type="StaticBody" parent="Wall"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Wall/StaticBody"]
+shape = SubResource( 2 )
+
+[node name="Wall2" type="MeshInstance" parent="."]
+transform = Transform( 3.32655, 0, 0, 0, -1.57301e-08, -0.694291, 0, 0.209406, -2.4533e-07, 5.53905, -0.597366, 8.44266 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Wall2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Wall2/StaticBody"]
 shape = SubResource( 2 )
 
 [node name="LightSwitch" type="MeshInstance" parent="."]
@@ -102,6 +114,9 @@ material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Enemy3"]
 shape = SubResource( 4 )
+
+[node name="Enemy4" parent="." instance=ExtResource( 4 )]
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 1.58085, 0.163594, -1.89642 )
 
 [node name="UI" type="Control" parent="."]
 anchor_right = 1.0
