@@ -42,3 +42,8 @@ shape = SubResource( 1 )
 script = ExtResource( 2 )
 fire_rate = 1.0
 clip_size = 2
+
+[node name="SprintTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+[connection signal="timeout" from="SprintTimer" to="." method="_on_SprintTimer_timeout"]

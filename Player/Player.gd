@@ -3,10 +3,12 @@ extends KinematicBody
 export var default_move_speed = 10
 export var crouch_move_speed = 4
 export var crouch_speed = 20
+export var sprint_speed = 16
 export var acceleration = 5
 export var gravity = 0.98
 export var jump_power = 30
 export var mouse_sensitivity = 0.3
+export var limited_sprint = false
 
 export var default_height = 1.5
 export var crouch_height = 0.5
@@ -15,15 +17,16 @@ onready var head = $Head
 onready var camera = $Head/Camera
 onready var pcap = $CollisionShape
 onready var bonker = $Head/HeadBonker
+onready var sprint_timer = $SprintTimer
 
 var speed
 var velocity = Vector3()
 var camera_x_rotation = 0
+var crouching = false
+var sprinting = false
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	
-	
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -55,11 +58,29 @@ func _physics_process(delta):
 		velocity.y = -2
 		
 	if Input.is_action_pressed("crouch"):
+		crouching = true
+	if Input.is_action_just_released("crouch"):
+		crouching = false
+		
+	if Input.is_action_just_pressed("toggle_crouch"):
+		crouching = !crouching
+	
+	if crouching:
 		pcap.shape.height -= crouch_speed * delta
 		speed = crouch_move_speed
 	elif not head_bonked:
 		pcap.shape.height += crouch_speed * delta
 		
+	if Input.is_action_just_pressed("ability") and not sprinting:
+		sprinting = true
+		if limited_sprint:
+			sprint_timer.start()
+	elif Input.is_action_just_pressed("ability") and sprinting:
+		sprinting = false
+	
+	if sprinting:
+		speed = sprint_speed
+	
 	pcap.shape.height = clamp(pcap.shape.height, crouch_height, default_height)
 		
 	if Input.is_action_pressed("move_forward"):
@@ -82,3 +103,5 @@ func _physics_process(delta):
 	
 	velocity = move_and_slide(velocity, Vector3.UP)
 
+func _on_SprintTimer_timeout():
+	sprinting = false
