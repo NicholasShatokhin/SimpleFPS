@@ -1,19 +1,29 @@
 extends KinematicBody
 
-export var speed = 10
+export var default_move_speed = 10
+export var crouch_move_speed = 4
+export var crouch_speed = 20
 export var acceleration = 5
 export var gravity = 0.98
 export var jump_power = 30
 export var mouse_sensitivity = 0.3
 
+export var default_height = 1.5
+export var crouch_height = 0.5
+
 onready var head = $Head
 onready var camera = $Head/Camera
+onready var pcap = $CollisionShape
+onready var bonker = $Head/HeadBonker
 
+var speed
 var velocity = Vector3()
 var camera_x_rotation = 0
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -24,14 +34,34 @@ func _input(event):
 			camera.rotate_x(deg2rad(-x_delta))
 			camera_x_rotation += x_delta
 
-func _process(_delta):
+func _process(delta):
+	
 	if Input.is_action_just_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-
+		
 func _physics_process(delta):
 	var head_basis = head.get_global_transform().basis
 	
 	var direction = Vector3()
+	
+	var head_bonked = false
+	
+	speed = default_move_speed
+	
+	if bonker.is_colliding():
+		head_bonked = true
+		
+	if head_bonked:
+		velocity.y = -2
+		
+	if Input.is_action_pressed("crouch"):
+		pcap.shape.height -= crouch_speed * delta
+		speed = crouch_move_speed
+	elif not head_bonked:
+		pcap.shape.height += crouch_speed * delta
+		
+	pcap.shape.height = clamp(pcap.shape.height, crouch_height, default_height)
+		
 	if Input.is_action_pressed("move_forward"):
 		direction -= head_basis.z
 	elif Input.is_action_pressed("move_backward"):
